@@ -4,7 +4,7 @@ import {
   KeyValidatorInterface,
   KeyValidatorModule,
   bufferFromHexString,
-} from '@lido-nestjs/key-validation';
+} from '@catalist-nestjs/key-validation';
 import { KeysValidationService } from './keys-validation.service';
 import { LoggerModule } from 'common/logger';
 import { ConfigModule } from 'common/config';

@@ -133,33 +133,33 @@ export class StakingModuleGuardService {
    * @returns
    */
   async getHistoricalFrontRun(blockData: BlockData) {
-    const { depositedEvents, lidoWC } = blockData;
-    const potentialLidoDepositsEvents = depositedEvents.events.filter(
-      ({ wc, valid }) => wc === lidoWC && valid,
+    const { depositedEvents, catalistWC } = blockData;
+    const potentialCatalistDepositsEvents = depositedEvents.events.filter(
+      ({ wc, valid }) => wc === catalistWC && valid,
     );
 
-    this.logger.log('potential lido deposits events count', {
-      count: potentialLidoDepositsEvents.length,
+    this.logger.log('potential catalist deposits events count', {
+      count: potentialCatalistDepositsEvents.length,
     });
 
-    const potentialLidoDepositsKeysMap: Record<string, VerifiedDepositEvent> =
+    const potentialCatalistDepositsKeysMap: Record<string, VerifiedDepositEvent> =
       {};
 
-    potentialLidoDepositsEvents.forEach((event) => {
-      if (potentialLidoDepositsKeysMap[event.pubkey]) {
-        const existed = potentialLidoDepositsKeysMap[event.pubkey];
+    potentialCatalistDepositsEvents.forEach((event) => {
+      if (potentialCatalistDepositsKeysMap[event.pubkey]) {
+        const existed = potentialCatalistDepositsKeysMap[event.pubkey];
         const isExisted = this.isFirstEventEarlier(existed, event);
-        // this should not happen, since Lido deposits once per key.
+        // this should not happen, since Catalist deposits once per key.
         // but someone can still make such a deposit.
         if (isExisted) return;
       }
-      potentialLidoDepositsKeysMap[event.pubkey] = event;
+      potentialCatalistDepositsKeysMap[event.pubkey] = event;
     });
 
     const duplicatedDepositEvents: VerifiedDepositEvent[] = [];
 
     depositedEvents.events.forEach((event) => {
-      if (potentialLidoDepositsKeysMap[event.pubkey] && event.wc !== lidoWC) {
+      if (potentialCatalistDepositsKeysMap[event.pubkey] && event.wc !== catalistWC) {
         duplicatedDepositEvents.push(event);
       }
     });
@@ -178,13 +178,13 @@ export class StakingModuleGuardService {
 
     const frontRunnedDepositEvents = validDuplicatedDepositEvents.filter(
       (suspectedEvent) => {
-        // get event from lido map
-        const sameKeyLidoDeposit =
-          potentialLidoDepositsKeysMap[suspectedEvent.pubkey];
+        // get event from catalist map
+        const sameKeyCatalistDeposit =
+          potentialCatalistDepositsKeysMap[suspectedEvent.pubkey];
 
-        if (!sameKeyLidoDeposit) throw new Error('expected event not found');
+        if (!sameKeyCatalistDeposit) throw new Error('expected event not found');
 
-        return this.isFirstEventEarlier(suspectedEvent, sameKeyLidoDeposit);
+        return this.isFirstEventEarlier(suspectedEvent, sameKeyCatalistDeposit);
       },
     );
 
@@ -200,17 +200,17 @@ export class StakingModuleGuardService {
       return false;
     }
 
-    const lidoDepositedKeys = await this.stakingRouterService.getKeysByPubkeys(
+    const catalistDepositedKeys = await this.stakingRouterService.getKeysByPubkeys(
       frontRunnedDepositKeys,
     );
 
-    const isLidoDepositedKeys = lidoDepositedKeys.data.length;
+    const isCatalistDepositedKeys = catalistDepositedKeys.data.length;
 
-    if (isLidoDepositedKeys) {
+    if (isCatalistDepositedKeys) {
       this.logger.warn('historical front-run found');
     }
 
-    return isLidoDepositedKeys;
+    return isCatalistDepositedKeys;
   }
   /**
    * Checks keys for intersections with previously deposited keys and handles the situation
@@ -282,7 +282,7 @@ export class StakingModuleGuardService {
         usedKeys.length,
       );
 
-      // if found used keys, Lido already made deposit on this keys
+      // if found used keys, Catalist already made deposit on this keys
       if (usedKeys.length) {
         this.logger.log('Found that we already deposited on these keys', {
           blockHash,
@@ -347,7 +347,7 @@ export class StakingModuleGuardService {
   }
 
   /**
-   * Excludes invalid deposits and deposits with Lido WC from intersections
+   * Excludes invalid deposits and deposits with Catalist WC from intersections
    * @param intersections - list of deposits with keys that were deposited earlier
    * @param blockData - collected data from the current block
    */
@@ -355,22 +355,22 @@ export class StakingModuleGuardService {
     blockData: BlockData,
     validIntersections: VerifiedDepositEvent[],
   ): Promise<VerifiedDepositEvent[]> {
-    // Exclude deposits with Lido withdrawal credentials
+    // Exclude deposits with Catalist withdrawal credentials
     return validIntersections.filter(
-      (deposit) => deposit.wc !== blockData.lidoWC,
+      (deposit) => deposit.wc !== blockData.catalistWC,
     );
   }
 
   /**
    * If we find an intersection between the unused keys and the deposited keys in the Ethereum deposit contract
-   * with Lido withdrawal credentials, we need to determine whether this deposit was made by Lido.
-   * If it was indeed made by Lido, we set a metric and skip sending deposit messages in the queue for this iteration.
+   * with Catalist withdrawal credentials, we need to determine whether this deposit was made by Catalist.
+   * If it was indeed made by Catalist, we set a metric and skip sending deposit messages in the queue for this iteration.
    */
   public async findAlreadyDepositedKeys(
     lastChangedBlockHash: string,
-    intersectionsWithLidoWC: VerifiedDepositEvent[],
+    intersectionsWithCatalistWC: VerifiedDepositEvent[],
   ) {
-    const depositedPubkeys = intersectionsWithLidoWC.map(
+    const depositedPubkeys = intersectionsWithCatalistWC.map(
       (deposit) => deposit.pubkey,
     );
     // if depositedPubkeys == [], /find will return validation error
@@ -380,7 +380,7 @@ export class StakingModuleGuardService {
 
     // TODO: add staking module id
     this.logger.log(
-      'Found intersections with lido credentials, need to check used duplicated keys',
+      'Found intersections with catalist credentials, need to check used duplicated keys',
     );
 
     const { data, meta } = await this.stakingRouterService.getKeysByPubkeys(
@@ -599,7 +599,7 @@ export class StakingModuleGuardService {
 
     const invalidKeysList = await this.keysValidationService.findInvalidKeys(
       stakingModuleData.vettedUnusedKeys,
-      blockData.lidoWC,
+      blockData.catalistWC,
     );
 
     const validationTimeEnd = performance.now();

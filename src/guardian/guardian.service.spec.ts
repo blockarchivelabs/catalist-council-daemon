@@ -10,7 +10,7 @@ import { GuardianModule } from 'guardian';
 import { DepositModule } from 'contracts/deposit';
 import { SecurityModule } from 'contracts/security';
 import { RepositoryModule, RepositoryService } from 'contracts/repository';
-import { LidoModule } from 'contracts/lido';
+import { CatalistModule } from 'contracts/catalist';
 import { MessagesModule } from 'messages';
 import { StakingRouterModule, StakingRouterService } from 'staking-router';
 import { GuardianMetricsModule } from './guardian-metrics';
@@ -45,7 +45,7 @@ describe('GuardianService', () => {
         RepositoryModule,
         DepositModule,
         SecurityModule,
-        LidoModule,
+        CatalistModule,
         MessagesModule,
         StakingRouterModule,
         ScheduleModule,

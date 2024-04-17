@@ -48,7 +48,7 @@ export const groupedByModulesOperators: GroupedByModuleOperatorListResponse = {
     {
       operators: [
         {
-          name: 'Lido x Obol: Delightful Dragonfly',
+          name: 'Catalist x Obol: Delightful Dragonfly',
           rewardAddress: '0x142E4542865a638208c17fF288cdA8cC82ecD27a',
           stakingLimit: 5,
           stoppedValidators: 0,

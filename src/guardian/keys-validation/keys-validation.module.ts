@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { KeyValidatorModule } from '@lido-nestjs/key-validation';
+import { KeyValidatorModule } from '@catalist-nestjs/key-validation';
 import { KeysValidationService } from './keys-validation.service';
 
 @Module({

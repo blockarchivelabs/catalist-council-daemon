@@ -12,7 +12,7 @@ import {
   METRIC_BLOCK_DATA_REQUEST_ERRORS,
 } from 'common/prometheus';
 import { Counter, Histogram } from 'prom-client';
-import { LidoService } from 'contracts/lido';
+import { CatalistService } from 'contracts/catalist';
 
 @Injectable()
 export class BlockGuardService {
@@ -30,7 +30,7 @@ export class BlockGuardService {
 
     private depositService: DepositService,
     private securityService: SecurityService,
-    private lidoService: LidoService,
+    private catalistService: CatalistService,
   ) {}
 
   public isNeedToProcessNewState(newMeta: {
@@ -69,12 +69,12 @@ export class BlockGuardService {
     try {
       const guardianAddress = this.securityService.getGuardianAddress();
 
-      const [depositRoot, depositedEvents, guardianIndex, lidoWC] =
+      const [depositRoot, depositedEvents, guardianIndex, catalistWC] =
         await Promise.all([
           this.depositService.getDepositRoot({ blockHash }),
           this.depositService.getAllDepositedEvents(blockNumber, blockHash),
           this.securityService.getGuardianIndex({ blockHash }),
-          this.lidoService.getWithdrawalCredentials({ blockHash }),
+          this.catalistService.getWithdrawalCredentials({ blockHash }),
         ]);
 
       return {
@@ -84,7 +84,7 @@ export class BlockGuardService {
         depositedEvents,
         guardianAddress,
         guardianIndex,
-        lidoWC,
+        catalistWC,
       };
     } catch (error) {
       this.blockErrorsCounter.inc();

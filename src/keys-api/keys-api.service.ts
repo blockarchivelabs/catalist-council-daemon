@@ -1,5 +1,5 @@
 import { Injectable, LoggerService, Inject } from '@nestjs/common';
-import { FetchService, RequestInit } from '@lido-nestjs/fetch';
+import { FetchService, RequestInit } from '@catalist-nestjs/fetch';
 import { AbortController } from 'node-abort-controller';
 import { FETCH_REQUEST_TIMEOUT } from './keys-api.constants';
 import { KeyListResponse, Status } from './interfaces';

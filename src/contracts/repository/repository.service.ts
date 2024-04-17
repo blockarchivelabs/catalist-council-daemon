@@ -1,5 +1,5 @@
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
-import { LidoAbi, LidoAbi__factory, LocatorAbi } from 'generated';
+import { CatalistAbi, CatalistAbi__factory, LocatorAbi } from 'generated';
 import { SecurityAbi, SecurityAbi__factory } from 'generated';
 import { DepositAbi, DepositAbi__factory } from 'generated';
 import { StakingRouterAbi, StakingRouterAbi__factory } from 'generated';
@@ -11,7 +11,7 @@ import {
   DEPOSIT_ABI,
   DSM_ABI,
   INIT_CONTRACTS_TIMEOUT,
-  LIDO_ABI,
+  CATALIST_ABI,
   STAKING_ROUTER_ABI,
 } from './repository.constants';
 
@@ -24,7 +24,7 @@ export class RepositoryService {
   ) {}
   private tempContractsCache: Record<
     string,
-    LidoAbi | LocatorAbi | SecurityAbi | StakingRouterAbi
+    CatalistAbi | LocatorAbi | SecurityAbi | StakingRouterAbi
   > = {};
   // store prefixes on the current state of the contracts.
   // if the contracts are updated we will change these addresses too
@@ -35,7 +35,7 @@ export class RepositoryService {
    * Init cache for each contract
    */
   public async initCachedContracts(blockTag: BlockTag) {
-    await this.initCachedLidoContract(blockTag);
+    await this.initCachedCatalistContract(blockTag);
     // order is important: deposit contract depends on dsm
     await this.initCachedDSMContract(blockTag);
     await this.initCachedDepositContract(blockTag);
@@ -58,10 +58,10 @@ export class RepositoryService {
   }
 
   /**
-   * Get Lido contract impl
+   * Get Catalist contract impl
    */
-  public getCachedLidoContract(): LidoAbi {
-    return this.getFromCache(LIDO_ABI) as LidoAbi;
+  public getCachedCatalistContract(): CatalistAbi {
+    return this.getFromCache(CATALIST_ABI) as CatalistAbi;
   }
 
   /**
@@ -100,7 +100,7 @@ export class RepositoryService {
   public setContractCache(
     address: string,
     contractKey: string,
-    impl: LidoAbi | LocatorAbi | SecurityAbi | StakingRouterAbi,
+    impl: CatalistAbi | LocatorAbi | SecurityAbi | StakingRouterAbi,
   ) {
     if (!this.tempContractsCache[contractKey]) {
       this.logger.log('Contract initial address', { address, contractKey });
@@ -126,16 +126,16 @@ export class RepositoryService {
   }
 
   /**
-   * Init cache for Lido contract
+   * Init cache for Catalist contract
    */
-  private async initCachedLidoContract(blockTag: BlockTag): Promise<void> {
-    const address = await this.locatorService.getLidoAddress(blockTag);
+  private async initCachedCatalistContract(blockTag: BlockTag): Promise<void> {
+    const address = await this.locatorService.getCatalistAddress(blockTag);
     const provider = this.providerService.provider;
 
     this.setContractCache(
       address,
-      LIDO_ABI,
-      LidoAbi__factory.connect(address, provider),
+      CATALIST_ABI,
+      CatalistAbi__factory.connect(address, provider),
     );
   }
 

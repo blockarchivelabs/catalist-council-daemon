@@ -4,7 +4,7 @@ import {
   StaticJsonRpcProvider,
 } from '@ethersproject/providers';
 import { getNetwork } from '@ethersproject/networks';
-import { CHAINS } from '@lido-sdk/constants';
+import { CHAINS } from '@catalist-nestjs/constants';
 import { DynamicModule, Module } from '@nestjs/common';
 import { Configuration } from 'common/config';
 import { RpcBatchProvider, RpcProvider } from './interfaces';
