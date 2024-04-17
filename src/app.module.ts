@@ -13,10 +13,10 @@ import { RepositoryModule } from 'contracts/repository';
   imports: [
     ProviderModule.forRoot(),
     ConfigModule.forRoot(),
-    PrometheusModule,
+    // PrometheusModule,
     LoggerModule,
     GuardianModule,
-    HealthModule,
+    // HealthModule,
     RepositoryModule,
   ],
   providers: [AppService],

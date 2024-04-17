@@ -1,8 +1,8 @@
 import { LocatorService } from './locator.service';
 
 export const mockLocator = (locator: LocatorService) => {
-  const lidoAddr = jest
-    .spyOn(locator, 'getLidoAddress')
+  const catalistAddr = jest
+    .spyOn(locator, 'getCatalistAddress')
     .mockImplementation(async () => '0x' + '1'.repeat(40));
 
   const DSMAddr = jest
@@ -15,5 +15,5 @@ export const mockLocator = (locator: LocatorService) => {
     .spyOn(locator, 'getLocatorAddress')
     .mockImplementation(async () => '0x' + '4'.repeat(40));
 
-  return { lidoAddr, locatorAddr, SRAddr, DSMAddr };
+  return { catalistAddr, locatorAddr, SRAddr, DSMAddr };
 };

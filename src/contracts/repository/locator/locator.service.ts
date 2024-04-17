@@ -1,56 +1,56 @@
 import { Injectable } from '@nestjs/common';
 import { LocatorAbi, LocatorAbi__factory } from 'generated';
 import { BlockTag, ProviderService } from 'provider';
-import { getLidoLocatorAddress } from './locator.constants';
+import { getCatalistLocatorAddress } from './locator.constants';
 
 @Injectable()
 export class LocatorService {
   constructor(private providerService: ProviderService) {}
-  private cachedLidoLocatorContract: LocatorAbi | undefined;
+  private cachedCatalistLocatorContract: LocatorAbi | undefined;
   /**
    * Returns DSM contract address
    */
   public async getDSMAddress(blockTag: BlockTag): Promise<string> {
-    const lidoLocator = await this.getLidoLocatorAbiContract();
-    return await lidoLocator.depositSecurityModule({
+    const catalistLocator = await this.getCatalistLocatorAbiContract();
+    return await catalistLocator.depositSecurityModule({
       blockTag: blockTag as any,
     });
   }
 
   /**
-   * Returns Lido contract address
+   * Returns Catalist contract address
    */
-  public async getLidoAddress(blockTag: BlockTag): Promise<string> {
-    const lidoLocator = await this.getLidoLocatorAbiContract();
-    return await lidoLocator.lido({ blockTag: blockTag as any });
+  public async getCatalistAddress(blockTag: BlockTag): Promise<string> {
+    const catalistLocator = await this.getCatalistLocatorAbiContract();
+    return await catalistLocator.catalist({ blockTag: blockTag as any });
   }
   /**
    * Returns StakingRouter contract address
    */
   public async getStakingRouterAddress(blockTag: BlockTag): Promise<string> {
-    const lidoLocator = await this.getLidoLocatorAbiContract();
-    return await lidoLocator.stakingRouter({ blockTag: blockTag as any });
+    const catalistLocator = await this.getCatalistLocatorAbiContract();
+    return await catalistLocator.stakingRouter({ blockTag: blockTag as any });
   }
   /**
-   * Get Lido locator contract
+   * Get Catalist locator contract
    */
-  public async getLidoLocatorAbiContract(): Promise<LocatorAbi> {
-    if (this.cachedLidoLocatorContract) return this.cachedLidoLocatorContract;
+  public async getCatalistLocatorAbiContract(): Promise<LocatorAbi> {
+    if (this.cachedCatalistLocatorContract) return this.cachedCatalistLocatorContract;
     const locatorAddress = await this.getLocatorAddress();
     const provider = this.providerService.provider;
 
-    this.cachedLidoLocatorContract = LocatorAbi__factory.connect(
+    this.cachedCatalistLocatorContract = LocatorAbi__factory.connect(
       locatorAddress,
       provider,
     );
-    return this.cachedLidoLocatorContract;
+    return this.cachedCatalistLocatorContract;
   }
 
   /**
-   * Returns Lido locator contract address
+   * Returns Catalist locator contract address
    */
   public async getLocatorAddress(): Promise<string> {
     const chainId = await this.providerService.getChainId();
-    return getLidoLocatorAddress(chainId);
+    return getCatalistLocatorAddress(chainId);
   }
 }

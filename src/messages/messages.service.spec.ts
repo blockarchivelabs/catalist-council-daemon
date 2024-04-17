@@ -1,4 +1,4 @@
-import { CHAINS } from '@lido-sdk/constants';
+import { CHAINS } from '@catalist-nestjs/constants';
 import { Test } from '@nestjs/testing';
 import { getNetwork } from '@ethersproject/networks';
 import { MockProviderModule, ProviderService } from 'provider';

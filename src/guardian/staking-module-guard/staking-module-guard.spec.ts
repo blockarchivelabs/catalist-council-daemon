@@ -7,7 +7,7 @@ import { ConfigModule } from 'common/config';
 import { PrometheusModule } from 'common/prometheus';
 import { SecurityModule, SecurityService } from 'contracts/security';
 import { RepositoryModule } from 'contracts/repository';
-import { LidoModule } from 'contracts/lido';
+import { CatalistModule } from 'contracts/catalist';
 import { MessageType } from 'messages';
 import { StakingModuleGuardModule } from './staking-module-guard.module';
 import { StakingRouterModule, StakingRouterService } from 'staking-router';
@@ -65,7 +65,7 @@ describe('StakingModuleGuardService', () => {
         LoggerModule,
         StakingModuleGuardModule,
         SecurityModule,
-        LidoModule,
+        CatalistModule,
         StakingRouterModule,
         GuardianMetricsModule,
         GuardianMessageModule,
@@ -169,7 +169,7 @@ describe('StakingModuleGuardService', () => {
   });
 
   describe('checkKeysIntersections', () => {
-    const lidoWC = '0x12';
+    const catalistWC = '0x12';
     const attackerWC = '0x23';
     const depositedPubKeys = ['0x1234', '0x5678'];
     const depositedEvents = {
@@ -211,7 +211,7 @@ describe('StakingModuleGuardService', () => {
         ...currentBlockData,
         depositedEvents: { ...currentBlockData.depositedEvents, events },
         unusedKeys,
-        lidoWC,
+        catalistWC,
       };
 
       const mockHandleCorrectKeys = jest
@@ -251,10 +251,10 @@ describe('StakingModuleGuardService', () => {
       expect(mockSecurityContractIsDepositsPaused).toBeCalledTimes(1);
     });
 
-    it('should call handleCorrectKeys when Lido unused keys are absent in the deposit contract and vetted unused keys are valid', async () => {
+    it('should call handleCorrectKeys when Catalist unused keys are absent in the deposit contract and vetted unused keys are valid', async () => {
       const notDepositedKey = '0x2345';
       const unusedKeys = [notDepositedKey];
-      const blockData = { ...currentBlockData, unusedKeys, lidoWC };
+      const blockData = { ...currentBlockData, unusedKeys, catalistWC };
 
       const mockHandleCorrectKeys = jest
         .spyOn(stakingModuleGuardService, 'handleCorrectKeys')
@@ -300,7 +300,7 @@ describe('StakingModuleGuardService', () => {
     it('should not call handleCorrectKeys if vetted unused keys are invalid', async () => {
       const notDepositedKey = '0x2345';
       const unusedKeys = [notDepositedKey];
-      const blockData = { ...currentBlockData, unusedKeys, lidoWC };
+      const blockData = { ...currentBlockData, unusedKeys, catalistWC };
 
       const mockHandleCorrectKeys = jest
         .spyOn(stakingModuleGuardService, 'handleCorrectKeys')
@@ -386,7 +386,7 @@ describe('StakingModuleGuardService', () => {
     it('should not rerun validation when the lastChangedBlockHash is unchanged and no invalid keys were found previously', async () => {
       const notDepositedKey = '0x2345';
       const unusedKeys = [notDepositedKey];
-      const blockData = { ...currentBlockData, unusedKeys, lidoWC };
+      const blockData = { ...currentBlockData, unusedKeys, catalistWC };
 
       jest
         .spyOn(guardianMessageService, 'sendMessageFromGuardian')
@@ -452,7 +452,7 @@ describe('StakingModuleGuardService', () => {
     it('should run validation when the lastChangedBlockHash was changed and no invalid keys were found previously', async () => {
       const notDepositedKey = '0x2345';
       const unusedKeys = [notDepositedKey];
-      const blockData = { ...currentBlockData, unusedKeys, lidoWC };
+      const blockData = { ...currentBlockData, unusedKeys, catalistWC };
 
       jest
         .spyOn(guardianMessageService, 'sendMessageFromGuardian')
@@ -727,14 +727,14 @@ describe('StakingModuleGuardService', () => {
 
   describe('excludeEligibleIntersections', () => {
     const pubkey = '0x1234';
-    const lidoWC = '0x12';
+    const catalistWC = '0x12';
     const attackerWC = '0x23';
-    const blockData = { blockHash: '0x1234', lidoWC } as any;
+    const blockData = { blockHash: '0x1234', catalistWC } as any;
 
     it('should exclude invalid intersections', async () => {
       // here should be in real test valid deposit
       // but function ignore it
-      const intersections = [{ valid: false, pubkey, wc: lidoWC } as any];
+      const intersections = [{ valid: false, pubkey, wc: catalistWC } as any];
 
       const filteredIntersections =
         await stakingModuleGuardService.excludeEligibleIntersections(
@@ -745,8 +745,8 @@ describe('StakingModuleGuardService', () => {
       expect(filteredIntersections).toHaveLength(0);
     });
 
-    it('should exclude intersections with lido WC', async () => {
-      const intersections = [{ valid: true, pubkey, wc: lidoWC } as any];
+    it('should exclude intersections with catalist WC', async () => {
+      const intersections = [{ valid: true, pubkey, wc: catalistWC } as any];
 
       const filteredIntersections =
         await stakingModuleGuardService.excludeEligibleIntersections(
@@ -1116,7 +1116,7 @@ describe('StakingModuleGuardService', () => {
   describe('findAlreadyDepositedKeys', () => {
     // function that return list from kapi that match keys in parameter
     it('intersection is empty', async () => {
-      const intersectionsWithLidoWC = [];
+      const intersectionsWithCatalistWC = [];
       // function that return list from kapi that match keys in parameter
       const mockSendMessageFromGuardian = jest.spyOn(
         stakingRouterService,
@@ -1125,22 +1125,22 @@ describe('StakingModuleGuardService', () => {
 
       const result = await stakingModuleGuardService.findAlreadyDepositedKeys(
         'lastHash',
-        intersectionsWithLidoWC,
+        intersectionsWithCatalistWC,
       );
 
       expect(result).toEqual([]);
       expect(mockSendMessageFromGuardian).toBeCalledTimes(0);
     });
 
-    it('should return keys list if deposits with lido wc were made by lido', async () => {
+    it('should return keys list if deposits with catalist wc were made by catalist', async () => {
       const pubkeyWithUsedKey1 = '0x1234';
       const pubkeyWithoutUsedKey = '0x56789';
       const pubkeyWithUsedKey2 = '0x3478';
-      const lidoWC = '0x12';
-      const intersectionsWithLidoWC = [
-        { pubkey: pubkeyWithUsedKey1, wc: lidoWC, valid: true } as any,
-        { pubkey: pubkeyWithoutUsedKey, wc: lidoWC, valid: true } as any,
-        { pubkey: pubkeyWithUsedKey2, wc: lidoWC, valid: true } as any,
+      const catalistWC = '0x12';
+      const intersectionsWithCatalistWC = [
+        { pubkey: pubkeyWithUsedKey1, wc: catalistWC, valid: true } as any,
+        { pubkey: pubkeyWithoutUsedKey, wc: catalistWC, valid: true } as any,
+        { pubkey: pubkeyWithUsedKey2, wc: catalistWC, valid: true } as any,
       ];
       // function that return list from kapi that match keys in parameter
       const mockSendMessageFromGuardian = jest
@@ -1200,7 +1200,7 @@ describe('StakingModuleGuardService', () => {
 
       const result = await stakingModuleGuardService.findAlreadyDepositedKeys(
         'lastHash',
-        intersectionsWithLidoWC,
+        intersectionsWithCatalistWC,
       );
 
       expect(result.length).toEqual(2);
@@ -1227,15 +1227,15 @@ describe('StakingModuleGuardService', () => {
       expect(mockSendMessageFromGuardian).toBeCalledTimes(1);
     });
 
-    it('should return empty list if deposits with lido wc were made by someone else ', async () => {
+    it('should return empty list if deposits with catalist wc were made by someone else ', async () => {
       const pubkey1 = '0x1234';
       const pubkey2 = '0x56789';
       const pubkey3 = '0x3478';
-      const lidoWC = '0x12';
-      const intersectionsWithLidoWC = [
-        { pubkey: pubkey1, wc: lidoWC, valid: true } as any,
-        { pubkey: pubkey2, wc: lidoWC, valid: true } as any,
-        { pubkey: pubkey3, wc: lidoWC, valid: true } as any,
+      const catalistWC = '0x12';
+      const intersectionsWithCatalistWC = [
+        { pubkey: pubkey1, wc: catalistWC, valid: true } as any,
+        { pubkey: pubkey2, wc: catalistWC, valid: true } as any,
+        { pubkey: pubkey3, wc: catalistWC, valid: true } as any,
       ];
       // function that return list from kapi that match keys in parameter
       const mockSendMessageFromGuardian = jest
@@ -1279,7 +1279,7 @@ describe('StakingModuleGuardService', () => {
 
       const result = await stakingModuleGuardService.findAlreadyDepositedKeys(
         'lastHash',
-        intersectionsWithLidoWC,
+        intersectionsWithCatalistWC,
       );
 
       expect(result).toEqual([]);
@@ -1290,11 +1290,11 @@ describe('StakingModuleGuardService', () => {
       const pubkey1 = '0x1234';
       const pubkey2 = '0x56789';
       const pubkey3 = '0x3478';
-      const lidoWC = '0x12';
-      const intersectionsWithLidoWC = [
-        { pubkey: pubkey1, wc: lidoWC, valid: true } as any,
-        { pubkey: pubkey2, wc: lidoWC, valid: true } as any,
-        { pubkey: pubkey3, wc: lidoWC, valid: true } as any,
+      const catalistWC = '0x12';
+      const intersectionsWithCatalistWC = [
+        { pubkey: pubkey1, wc: catalistWC, valid: true } as any,
+        { pubkey: pubkey2, wc: catalistWC, valid: true } as any,
+        { pubkey: pubkey3, wc: catalistWC, valid: true } as any,
       ];
       // function that return list from kapi that match keys in parameter
       const mockSendMessageFromGuardian = jest
@@ -1341,7 +1341,7 @@ describe('StakingModuleGuardService', () => {
       expect(
         stakingModuleGuardService.findAlreadyDepositedKeys(
           prevLastChangedBlockHash,
-          intersectionsWithLidoWC,
+          intersectionsWithCatalistWC,
         ),
       ).rejects.toThrowError(new InconsistentLastChangedBlockHash());
 

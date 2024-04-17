@@ -1,8 +1,8 @@
 import { Module, HttpException } from '@nestjs/common';
 import { Histogram } from 'prom-client';
 import { getToken } from '@willsoto/nestjs-prometheus';
-import { FetchModule } from '@lido-nestjs/fetch';
-import { MiddlewareModule } from '@lido-nestjs/middleware';
+import { FetchModule } from '@catalist-nestjs/fetch';
+import { MiddlewareModule } from '@catalist-nestjs/middleware';
 
 import { KeysApiService } from './keys-api.service';
 import { ConfigModule } from 'common/config';

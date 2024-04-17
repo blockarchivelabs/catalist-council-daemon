@@ -1,5 +1,5 @@
 import { Block } from '@ethersproject/abstract-provider';
-import { CHAINS } from '@lido-sdk/constants';
+import { CHAINS } from '@catalist-nestjs/constants';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { sleep } from 'utils';

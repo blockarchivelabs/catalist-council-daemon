@@ -1,49 +1,53 @@
 version: '3.7'
 
 services:
-  keys_api_service_db:
-    image: postgres:14-alpine
-    container_name: keys_api_service_db
-    restart: unless-stopped
-    environment:
-      - POSTGRES_DB=${KEYS_API_DB_NAME}
-      - POSTGRES_USER=${KEYS_API_DB_USER}
-      - POSTGRES_PASSWORD=${KEYS_API_DB_PASSWORD}
-    volumes:
-      - ./.volumes/pgdata-${CHAIN_ID}/:/var/lib/postgresql/data
+  # keys_api_service_db:
+  #   image: postgres:14-alpine
+  #   container_name: keys_api_service_db
+  #   restart: unless-stopped
+  #   environment:
+  #     - POSTGRES_DB=${KEYS_API_DB_NAME}
+  #     - POSTGRES_USER=${KEYS_API_DB_USER}
+  #     - POSTGRES_PASSWORD=${KEYS_API_DB_PASSWORD}
+  #   volumes:
+  #     - ./.volumes/pgdata-${CHAIN_ID}/:/var/lib/postgresql/data
 
   keys_api_service_api:
     # get last hash from  https://docs.lido.fi/guides/tooling/#keys-api
-    image: lidofinance/lido-keys-api@<latest-hash>
+    image: blockarchivelabs/catalist-keys-api:latest
+    ports:
+      - '127.0.0.1:${KEYS_API_PORT}:${KEYS_API_PORT}' # port is used for prometheus metrics
     container_name: keys_api_service_api
     environment:
-      - PORT=3001
+      - PORT=${KEYS_API_PORT}
       - LOG_LEVEL=${LOG_LEVEL}
       - LOG_FORMAT=${LOG_FORMAT}
-      - CHAIN_ID=${CHAIN_ID}
+      - CHAIN_ID=${KEYS_API_CHAIN_ID}
       - PROVIDERS_URLS=${RPC_URL}
-      - VALIDATOR_REGISTRY_ENABLE=false
+      - CHRONIX_PROVIDER_MAINNET_URL=${KEYS_API_CHRONIX_PROVIDER_MAINNET_URL}
+      - VALIDATOR_REGISTRY_ENABLE=true
+      - CL_API_URLS=${KEYS_API_CL_API_URLS}
       - DB_NAME=${KEYS_API_DB_NAME}
-      - DB_PORT=5432
-      - DB_HOST=keys_api_service_db
+      - DB_PORT=${KEYS_API_DB_PORT}
+      - DB_HOST=${KEYS_API_DB_HOST}
       - DB_USER=${KEYS_API_DB_USER}
       - DB_PASSWORD=${KEYS_API_DB_PASSWORD}
-    depends_on:
-      - keys_api_service_db
+    # depends_on:
+    #   - keys_api_service_db
 
   council_daemon:
     # get last hash from  https://docs.lido.fi/guides/tooling/#council-daemon
-    image: lidofinance/lido-council-daemon@<latest-hash>
+    image: blockarchivelabs/catalist-council-daemon:latest
     ports:
-      - "127.0.0.1:${PORT}:3000" # port is used for prometheus metrics
+      - '127.0.0.1:${COUNCIL_PORT}:${COUNCIL_PORT}' # port is used for prometheus metrics
     environment:
-      - PORT=3000
+      - PORT=${COUNCIL_PORT}
       - LOG_LEVEL=${LOG_LEVEL}
       - LOG_FORMAT=${LOG_FORMAT}
       - RPC_URL=${RPC_URL}
       - WALLET_PRIVATE_KEY=${WALLET_PRIVATE_KEY}
       - KEYS_API_HOST=http://keys_api_service_api
-      - KEYS_API_PORT=3001
+      - KEYS_API_PORT=${KEYS_API_PORT}
       - PUBSUB_SERVICE=rabbitmq
       - RABBITMQ_URL=${RABBITMQ_URL}
       - RABBITMQ_LOGIN=${RABBITMQ_LOGIN}

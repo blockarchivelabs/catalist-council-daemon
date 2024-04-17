@@ -6,7 +6,7 @@ import {
   Pubkey,
   WithdrawalCredentialsBuffer,
   Key,
-} from '@lido-nestjs/key-validation';
+} from '@catalist-nestjs/key-validation';
 import { RegistryKey } from 'keys-api/interfaces/RegistryKey';
 import { GENESIS_FORK_VERSION_BY_CHAIN_ID } from 'bls/bls.constants';
 import { LRUCache } from 'lru-cache';
