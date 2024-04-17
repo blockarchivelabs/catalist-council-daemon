@@ -5,4 +5,4 @@ scrape_configs:
     static_configs:
       - targets: ['docker.for.mac.host.internal:3003']
 remote_write:
-  - url: https://localhost/api/v1/write
+  - url: http://localhost/api/v1/write

@@ -12,13 +12,15 @@ import { GuardianMessageService } from '../guardian-message';
 import { StakingRouterService } from 'staking-router';
 import { KeysValidationService } from 'guardian/keys-validation/keys-validation.service';
 import { performance } from 'perf_hooks';
+import { RepositoryService } from 'contracts/repository';
+import { WalletService } from 'wallet';
 
 @Injectable()
 export class StakingModuleGuardService {
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private logger: LoggerService,
-
+    private repositoryService: RepositoryService,
     private securityService: SecurityService,
     private stakingRouterService: StakingRouterService,
     private guardianMetricsService: GuardianMetricsService,
@@ -142,8 +144,10 @@ export class StakingModuleGuardService {
       count: potentialCatalistDepositsEvents.length,
     });
 
-    const potentialCatalistDepositsKeysMap: Record<string, VerifiedDepositEvent> =
-      {};
+    const potentialCatalistDepositsKeysMap: Record<
+      string,
+      VerifiedDepositEvent
+    > = {};
 
     potentialCatalistDepositsEvents.forEach((event) => {
       if (potentialCatalistDepositsKeysMap[event.pubkey]) {
@@ -159,7 +163,10 @@ export class StakingModuleGuardService {
     const duplicatedDepositEvents: VerifiedDepositEvent[] = [];
 
     depositedEvents.events.forEach((event) => {
-      if (potentialCatalistDepositsKeysMap[event.pubkey] && event.wc !== catalistWC) {
+      if (
+        potentialCatalistDepositsKeysMap[event.pubkey] &&
+        event.wc !== catalistWC
+      ) {
         duplicatedDepositEvents.push(event);
       }
     });
@@ -182,7 +189,8 @@ export class StakingModuleGuardService {
         const sameKeyCatalistDeposit =
           potentialCatalistDepositsKeysMap[suspectedEvent.pubkey];
 
-        if (!sameKeyCatalistDeposit) throw new Error('expected event not found');
+        if (!sameKeyCatalistDeposit)
+          throw new Error('expected event not found');
 
         return this.isFirstEventEarlier(suspectedEvent, sameKeyCatalistDeposit);
       },
@@ -200,9 +208,8 @@ export class StakingModuleGuardService {
       return false;
     }
 
-    const catalistDepositedKeys = await this.stakingRouterService.getKeysByPubkeys(
-      frontRunnedDepositKeys,
-    );
+    const catalistDepositedKeys =
+      await this.stakingRouterService.getKeysByPubkeys(frontRunnedDepositKeys);
 
     const isCatalistDepositedKeys = catalistDepositedKeys.data.length;
 
@@ -505,6 +512,20 @@ export class StakingModuleGuardService {
       stakingModuleId,
     };
 
+    // call deposit validator contract
+    const contract = this.repositoryService.getCachedDSMContract();
+
+    contract.depositBufferedEther(
+      blockNumber,
+      blockHash,
+      depositRoot,
+      stakingModuleId,
+      nonce,
+      '',
+      [{ r: signature.r, vs: signature._vs }],
+    );
+    //-------------------------------------------------------------------
+
     this.logger.log('No problems found', {
       stakingModuleId,
       blockHash,
@@ -512,7 +533,7 @@ export class StakingModuleGuardService {
       newState: currentContractState,
     });
 
-    await this.guardianMessageService.sendDepositMessage(depositMessage);
+    // await this.guardianMessageService.sendDepositMessage(depositMessage);
   }
 
   public async isVettedUnusedKeysValid(

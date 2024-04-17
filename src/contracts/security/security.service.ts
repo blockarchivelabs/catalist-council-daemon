@@ -162,7 +162,6 @@ export class SecurityService {
     const contract = await this.getContractWithSigner();
 
     const { r, _vs: vs } = signature;
-
     const tx = await contract.pauseDeposits(blockNumber, stakingModuleId, {
       r,
       vs,
