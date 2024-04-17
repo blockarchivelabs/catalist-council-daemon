@@ -11,12 +11,20 @@ services:
   #     - POSTGRES_PASSWORD=${KEYS_API_DB_PASSWORD}
   #   volumes:
   #     - ./.volumes/pgdata-${CHAIN_ID}/:/var/lib/postgresql/data
+  council_daemon_prometheus:
+    image: prom/prometheus:v2.44.0
+    container_name: council_daemon_prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus/:/etc/prometheus/
+    command: --config.file=/etc/prometheus/prometheus.yml --enable-feature=remote-write-receiver
 
   keys_api_service_api:
     # get last hash from  https://docs.lido.fi/guides/tooling/#keys-api
     image: blockarchivelabs/catalist-keys-api:latest
     ports:
-      - '127.0.0.1:${KEYS_API_PORT}:${KEYS_API_PORT}' # port is used for prometheus metrics
+      - '${KEYS_API_PORT}:${KEYS_API_PORT}' # port is used for prometheus metrics
     container_name: keys_api_service_api
     environment:
       - PORT=${KEYS_API_PORT}
@@ -32,6 +40,8 @@ services:
       - DB_HOST=${KEYS_API_DB_HOST}
       - DB_USER=${KEYS_API_DB_USER}
       - DB_PASSWORD=${KEYS_API_DB_PASSWORD}
+    networks:
+      - catalist_network
     # depends_on:
     #   - keys_api_service_db
 
@@ -39,7 +49,7 @@ services:
     # get last hash from  https://docs.lido.fi/guides/tooling/#council-daemon
     image: blockarchivelabs/catalist-council-daemon:latest
     ports:
-      - '127.0.0.1:${COUNCIL_PORT}:${COUNCIL_PORT}' # port is used for prometheus metrics
+      - '${COUNCIL_PORT}:${COUNCIL_PORT}' # port is used for prometheus metrics
     environment:
       - PORT=${COUNCIL_PORT}
       - LOG_LEVEL=${LOG_LEVEL}
@@ -56,3 +66,9 @@ services:
       - keys_api_service_api
     volumes:
       - ./.volumes/cache/:/council/cache/
+    networks:
+      - catalist_network
+
+networks:
+  catalist_network:
+    driver: bridge

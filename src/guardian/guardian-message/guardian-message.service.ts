@@ -10,7 +10,6 @@ import {
 } from 'messages';
 import { BlockData } from '../interfaces';
 import { APP_NAME, APP_VERSION } from 'app.constants';
-import { SECURITY_CONTRACT_TOKEN, Security } from '@catalist-nestjs/contracts';
 
 @Injectable()
 export class GuardianMessageService {
@@ -18,7 +17,6 @@ export class GuardianMessageService {
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private logger: LoggerService,
     private messagesService: MessagesService,
-    @Inject(SECURITY_CONTRACT_TOKEN) protected readonly contract: Security,
   ) {}
 
   /**
