@@ -20,61 +20,57 @@ export type SASLMechanism = 'plain' | 'scram-sha-256' | 'scram-sha-512';
   exports: [TransportInterface],
   imports: [WalletModule],
   providers: [
-    {
-      provide: TransportInterface,
-      useFactory: async (
-        config: Configuration,
-        logger: LoggerService,
-        walletService: WalletService,
-      ) => {
-        if (config.PUBSUB_SERVICE == 'kafka') {
-          const kafka = new Kafka({
-            clientId: config.KAFKA_CLIENT_ID || walletService.address,
-            brokers: [config.KAFKA_BROKER_ADDRESS_1],
-            ssl: config.KAFKA_SSL,
-            sasl: {
-              mechanism: config.KAFKA_SASL_MECHANISM,
-              username: config.KAFKA_USERNAME,
-              password: config.KAFKA_PASSWORD,
-            },
-            logCreator: () => {
-              return ({ log, level }) => {
-                const prefix = KAFKA_LOG_PREFIX;
-                if (level === logLevel.ERROR) logger.error(log);
-                if (level === logLevel.WARN) logger.warn(prefix, log);
-                if (level === logLevel.INFO) logger.log(prefix, log);
-                if (level === logLevel.DEBUG) logger.debug?.(prefix, log);
-              };
-            },
-          });
-
-          return new KafkaTransport(logger, kafka);
-        } else if (config.PUBSUB_SERVICE == `rabbitmq`) {
-          const stompClient = new StompClient({
-            url: config.RABBITMQ_URL,
-            login: config.RABBITMQ_LOGIN,
-            passcode: config.RABBITMQ_PASSCODE,
-            connectCallback: () => {
-              logger.log(RABBIT_LOG_PREFIX, 'RabbitMQ connected successfully.');
-            },
-            errorCallback: (frame) => {
-              logger.error('STOMP error', frame);
-            },
-            logger,
-            options: STOMP_OPTIONS,
-          });
-
-          const transport = new StompTransport(stompClient);
-
-          stompClient.connect()?.catch((error) => {
-            logger.error('STOMP connection error', error);
-          });
-
-          return transport;
-        }
-      },
-      inject: [Configuration, WINSTON_MODULE_NEST_PROVIDER, WalletService],
-    },
+    // {
+    //   provide: TransportInterface,
+    //   useFactory: async (
+    //     config: Configuration,
+    //     logger: LoggerService,
+    //     walletService: WalletService,
+    //   ) => {
+    //     if (config.PUBSUB_SERVICE == 'kafka') {
+    //       const kafka = new Kafka({
+    //         clientId: config.KAFKA_CLIENT_ID || walletService.address,
+    //         brokers: [config.KAFKA_BROKER_ADDRESS_1],
+    //         ssl: config.KAFKA_SSL,
+    //         sasl: {
+    //           mechanism: config.KAFKA_SASL_MECHANISM,
+    //           username: config.KAFKA_USERNAME,
+    //           password: config.KAFKA_PASSWORD,
+    //         },
+    //         logCreator: () => {
+    //           return ({ log, level }) => {
+    //             const prefix = KAFKA_LOG_PREFIX;
+    //             if (level === logLevel.ERROR) logger.error(log);
+    //             if (level === logLevel.WARN) logger.warn(prefix, log);
+    //             if (level === logLevel.INFO) logger.log(prefix, log);
+    //             if (level === logLevel.DEBUG) logger.debug?.(prefix, log);
+    //           };
+    //         },
+    //       });
+    //       return new KafkaTransport(logger, kafka);
+    //     } else if (config.PUBSUB_SERVICE == `rabbitmq`) {
+    //       const stompClient = new StompClient({
+    //         url: config.RABBITMQ_URL,
+    //         login: config.RABBITMQ_LOGIN,
+    //         passcode: config.RABBITMQ_PASSCODE,
+    //         connectCallback: () => {
+    //           logger.log(RABBIT_LOG_PREFIX, 'RabbitMQ connected successfully.');
+    //         },
+    //         errorCallback: (frame) => {
+    //           logger.error('STOMP error', frame);
+    //         },
+    //         logger,
+    //         options: STOMP_OPTIONS,
+    //       });
+    //       const transport = new StompTransport(stompClient);
+    //       stompClient.connect()?.catch((error) => {
+    //         logger.error('STOMP connection error', error);
+    //       });
+    //       return transport;
+    //     }
+    //   },
+    //   inject: [Configuration, WINSTON_MODULE_NEST_PROVIDER, WalletService],
+    // },
   ],
 })
 export class TransportModule {}
