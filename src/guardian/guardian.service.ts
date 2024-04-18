@@ -153,6 +153,7 @@ export class GuardianService implements OnModuleInit {
 
       this.logger.log('Staking modules loaded', {
         modulesCount: stakingModulesCount,
+        blockNumber: blockNumber,
       });
 
       await this.depositService.handleNewBlock(blockNumber);
