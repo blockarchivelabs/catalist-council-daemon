@@ -409,26 +409,9 @@
         "internalType": "bytes",
         "name": "depositCalldata",
         "type": "bytes"
-      },
-      {
-        "components": [
-          {
-            "internalType": "bytes32",
-            "name": "r",
-            "type": "bytes32"
-          },
-          {
-            "internalType": "bytes32",
-            "name": "vs",
-            "type": "bytes32"
-          }
-        ],
-        "internalType": "struct DepositSecurityModule.Signature[]",
-        "name": "sortedGuardianSignatures",
-        "type": "tuple[]"
       }
     ],
-    "name": "depositBufferedEther",
+    "name": "depositBufferedAce",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
