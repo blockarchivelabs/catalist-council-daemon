@@ -41,7 +41,7 @@ const buildDockerImage = () => {
 const latestDockerImage = (tag) => {
     // Latest 태그를 새로운 버전으로 지정
     const latestImageName = `${repository}:latest`;
-    const command = `docker tag ${imageName}:${tag} ${latestImageName}`;
+    const command = `docker tag ${repository}:${tag} ${latestImageName}`;
     execSync(command, { stdio: 'inherit' });
 };
 

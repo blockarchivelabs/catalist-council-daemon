@@ -31,38 +31,38 @@ services:
       - ./prometheus/:/etc/prometheus/
     command: --config.file=/etc/prometheus/prometheus.yml --enable-feature=remote-write-receiver
 
-  # oracle-accounting:
-  #   # get last hash from  https://docs.lido.fi/guides/tooling/#keys-api
-  #   image: blockarchivelabs/catalist-oracle:latest
-  #   restart: always
-  #   container_name: oracle-accounting
-  #   environment:
-  #     - CONSENSUS_CLIENT_URI=${KEYS_API_CL_API_URLS}
-  #     - EXECUTION_CLIENT_URI=${RPC_URL}
-  #     - KEYS_API_URI=http://keys_api_service_api:${KEYS_API_PORT}
-  #     - CATALIST_LOCATOR_ADDRESS=0xE39c3142efA4e8a37770731bC8397e3F3B87e7C7
-  #     - MEMBER_PRIV_KEY=${WALLET_PRIVATE_KEY}
-  #     - ALLOW_REPORTING_IN_BUNKER_MODE=true
-  #     - CMD_PARAMETER=accounting
-  #     - PROMETHEUS_PORT=9090
-  #   networks:
-  #     - catalist_network
+  oracle-accounting:
+    # get last hash from  https://docs.lido.fi/guides/tooling/#keys-api
+    image: blockarchivelabs/catalist-oracle:latest
+    restart: always
+    container_name: oracle-accounting
+    environment:
+      - CONSENSUS_CLIENT_URI=${KEYS_API_CL_API_URLS}
+      - EXECUTION_CLIENT_URI=${RPC_URL}
+      - KEYS_API_URI=http://keys_api_service_api:${KEYS_API_PORT}
+      - CATALIST_LOCATOR_ADDRESS=0xE39c3142efA4e8a37770731bC8397e3F3B87e7C7
+      - MEMBER_PRIV_KEY=${WALLET_PRIVATE_KEY}
+      - ALLOW_REPORTING_IN_BUNKER_MODE=true
+      - CMD_PARAMETER=accounting
+      - PROMETHEUS_PORT=9090
+    networks:
+      - catalist_network
 
-  # oracle-ejector:
-  #   # get last hash from  https://docs.lido.fi/guides/tooling/#keys-api
-  #   image: blockarchivelabs/catalist-oracle:latest
-  #   restart: always
-  #   container_name: oracle-ejector
-  #   environment:
-  #     - CONSENSUS_CLIENT_URI=${KEYS_API_CL_API_URLS}
-  #     - EXECUTION_CLIENT_URI=${RPC_URL}
-  #     - KEYS_API_URI=http://keys_api_service_api:${KEYS_API_PORT}
-  #     - CATALIST_LOCATOR_ADDRESS=0xE39c3142efA4e8a37770731bC8397e3F3B87e7C7
-  #     - MEMBER_PRIV_KEY=${WALLET_PRIVATE_KEY}
-  #     - ALLOW_REPORTING_IN_BUNKER_MODE=true
-  #     - CMD_PARAMETER=ejector
-  #   networks:
-  #     - catalist_network
+  oracle-ejector:
+    # get last hash from  https://docs.lido.fi/guides/tooling/#keys-api
+    image: blockarchivelabs/catalist-oracle:latest
+    restart: always
+    container_name: oracle-ejector
+    environment:
+      - CONSENSUS_CLIENT_URI=${KEYS_API_CL_API_URLS}
+      - EXECUTION_CLIENT_URI=${RPC_URL}
+      - KEYS_API_URI=http://keys_api_service_api:${KEYS_API_PORT}
+      - CATALIST_LOCATOR_ADDRESS=0xE39c3142efA4e8a37770731bC8397e3F3B87e7C7
+      - MEMBER_PRIV_KEY=${WALLET_PRIVATE_KEY}
+      - ALLOW_REPORTING_IN_BUNKER_MODE=true
+      - CMD_PARAMETER=ejector
+    networks:
+      - catalist_network
 
   keys_api_service_api:
     # get last hash from  https://docs.lido.fi/guides/tooling/#keys-api
