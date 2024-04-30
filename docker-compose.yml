@@ -1,26 +1,31 @@
 version: '3.7'
 
 services:
-  # keys_api_service_db:
-  #   image: postgres:14-alpine
-  #   container_name: keys_api_service_db
-  #   restart: unless-stopped
-  #   environment:
-  #     - POSTGRES_DB=${KEYS_API_DB_NAME}
-  #     - POSTGRES_USER=${KEYS_API_DB_USER}
-  #     - POSTGRES_PASSWORD=${KEYS_API_DB_PASSWORD}
-  #   volumes:
-  #     - ./.volumes/pgdata-${CHAIN_ID}/:/var/lib/postgresql/data
+  keys_api_service_db:
+    image: postgres:14-alpine
+    container_name: keys_api_service_db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=${KEYS_API_DB_NAME}
+      - POSTGRES_USER=${KEYS_API_DB_USER}
+      - POSTGRES_PASSWORD=${KEYS_API_DB_PASSWORD}
+    volumes:
+      - ./.volumes/pgdata-${CHAIN_ID}/:/var/lib/postgresql/data
+    networks:
+      - catalist_network
+
   council_daemon_grafana:
     image: grafana/grafana-oss:9.1.5
     container_name: council_daemon_grafana
     restart: unless-stopped
     ports:
-      - 8001:8001
+      - 8001:3000
     volumes:
       - ./grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
     depends_on:
       - council_daemon_prometheus
+    networks:
+      - catalist_network
 
   council_daemon_prometheus:
     image: prom/prometheus:v2.44.0
@@ -30,6 +35,8 @@ services:
     volumes:
       - ./prometheus/:/etc/prometheus/
     command: --config.file=/etc/prometheus/prometheus.yml --enable-feature=remote-write-receiver
+    networks:
+      - catalist_network
 
   oracle-accounting:
     # get last hash from  https://docs.lido.fi/guides/tooling/#keys-api
@@ -40,13 +47,15 @@ services:
       - CONSENSUS_CLIENT_URI=${KEYS_API_CL_API_URLS}
       - EXECUTION_CLIENT_URI=${RPC_URL}
       - KEYS_API_URI=http://keys_api_service_api:${KEYS_API_PORT}
-      - CATALIST_LOCATOR_ADDRESS=0xE39c3142efA4e8a37770731bC8397e3F3B87e7C7
+      - CATALIST_LOCATOR_ADDRESS={CATALIST_LOCATOR_ADDRESS}
       - MEMBER_PRIV_KEY=${WALLET_PRIVATE_KEY}
-      - ALLOW_REPORTING_IN_BUNKER_MODE=true
+      - ALLOW_REPORTING_IN_BUNKER_MODE=True
       - CMD_PARAMETER=accounting
-      - PROMETHEUS_PORT=9090
+      - PROMETHEUS_PORT=3002
     networks:
       - catalist_network
+    ports:
+      - 3002:3002
 
   oracle-ejector:
     # get last hash from  https://docs.lido.fi/guides/tooling/#keys-api
@@ -57,12 +66,15 @@ services:
       - CONSENSUS_CLIENT_URI=${KEYS_API_CL_API_URLS}
       - EXECUTION_CLIENT_URI=${RPC_URL}
       - KEYS_API_URI=http://keys_api_service_api:${KEYS_API_PORT}
-      - CATALIST_LOCATOR_ADDRESS=0xE39c3142efA4e8a37770731bC8397e3F3B87e7C7
+      - CATALIST_LOCATOR_ADDRESS=${CATALIST_LOCATOR_ADDRESS}
       - MEMBER_PRIV_KEY=${WALLET_PRIVATE_KEY}
-      - ALLOW_REPORTING_IN_BUNKER_MODE=true
+      - ALLOW_REPORTING_IN_BUNKER_MODE=True
       - CMD_PARAMETER=ejector
+      - PROMETHEUS_PORT=3003
     networks:
       - catalist_network
+    ports:
+      - 3003:3003
 
   keys_api_service_api:
     # get last hash from  https://docs.lido.fi/guides/tooling/#keys-api
@@ -82,13 +94,13 @@ services:
       - CL_API_URLS=${KEYS_API_CL_API_URLS}
       - DB_NAME=${KEYS_API_DB_NAME}
       - DB_PORT=${KEYS_API_DB_PORT}
-      - DB_HOST=${KEYS_API_DB_HOST}
+      - DB_HOST=keys_api_service_db
       - DB_USER=${KEYS_API_DB_USER}
       - DB_PASSWORD=${KEYS_API_DB_PASSWORD}
     networks:
       - catalist_network
-    # depends_on:
-    #   - keys_api_service_db
+    depends_on:
+      - keys_api_service_db
 
   council_daemon:
     # get last hash from  https://docs.lido.fi/guides/tooling/#council-daemon

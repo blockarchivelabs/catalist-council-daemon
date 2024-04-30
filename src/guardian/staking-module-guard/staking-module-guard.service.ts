@@ -516,11 +516,6 @@ export class StakingModuleGuardService {
 
     const contract = await this.securityService.getContractWithSigner();
 
-    // const { r, _vs: vs } = signature;
-    // const tx = await contract.pauseDeposits(blockNumber, stakingModuleId, {
-    //   r,
-    //   vs,
-    // });
     contract.depositBufferedAce(
       blockNumber,
       blockHash,
@@ -528,8 +523,8 @@ export class StakingModuleGuardService {
       stakingModuleId,
       nonce,
       '0x00',
-      // [{ r: signature.r, vs: signature._vs }],
-      {gasLimit: 1000000, gasPrice:100000}
+      [{ r: signature.r, vs: signature._vs }],
+      { gasLimit: 1000000, gasPrice: 100000 },
     );
     //-------------------------------------------------------------------
 
