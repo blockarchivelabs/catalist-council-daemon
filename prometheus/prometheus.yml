@@ -2,7 +2,20 @@ global:
   scrape_interval: 5s
 scrape_configs:
   - job_name: 'council-daemon'
+    metrics_path: /metrics
     static_configs:
-      - targets: ['docker.for.mac.host.internal:3003']
+      - targets: ['council_daemon:3000']
+  - job_name: 'keys-api'
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['keys_api_service_api:3001']
+  - job_name: 'oracle-accounting'
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['oracle-accounting:3002']
+  - job_name: 'oracle-ejector'
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['oracle-ejector:3003']
 remote_write:
   - url: http://localhost/api/v1/write

@@ -14,6 +14,8 @@ import { KeysValidationService } from 'guardian/keys-validation/keys-validation.
 import { performance } from 'perf_hooks';
 import { RepositoryService } from 'contracts/repository';
 import { WalletService } from 'wallet';
+import { ProviderService } from 'provider';
+import { StakingRouterAbi } from 'generated';
 
 @Injectable()
 export class StakingModuleGuardService {
@@ -512,17 +514,17 @@ export class StakingModuleGuardService {
       stakingModuleId,
     };
 
-    // call deposit validator contract
-    const contract = this.repositoryService.getCachedDSMContract();
+    const contract = await this.securityService.getContractWithSigner();
 
-    contract.depositBufferedEther(
+    contract.depositBufferedAce(
       blockNumber,
       blockHash,
       depositRoot,
       stakingModuleId,
       nonce,
-      '',
+      '0x00',
       [{ r: signature.r, vs: signature._vs }],
+      { gasLimit: 1000000, gasPrice: 100000 },
     );
     //-------------------------------------------------------------------
 

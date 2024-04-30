@@ -1,4 +1,4 @@
-import { CHAINS } from '@lido-sdk/constants';
+import { CHAINS } from '@catalist-nestjs/constants';
 import { SecretKey } from '@chainsafe/blst';
 
 import { fromHexString } from '@chainsafe/ssz';

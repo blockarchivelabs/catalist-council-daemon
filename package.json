@@ -1,6 +1,6 @@
 {
   "name": "catalist-council-daemon",
-  "version": "1.0.2",
+  "version": "1.0.8",
   "description": "Catalist Council Daemon",
   "author": "Catalist team",
   "private": true,
@@ -29,13 +29,13 @@
     "cache:clear": "rimraf cache"
   },
   "dependencies": {
-    "@chainsafe/blst": "^0.2.4",
+    "@chainsafe/blst": "^0.2.10",
     "@chainsafe/ssz": "^0.9.2",
     "@ethersproject/providers": "^5.4.5",
-    "@catalist-nestjs/fetch": "^0.0.0",
-    "@catalist-nestjs/key-validation": "^0.0.0",
-    "@catalist-nestjs/middleware": "^0.0.0",
-    "@catalist-nestjs/contracts": "^0.0.5",
+    "@catalist-nestjs/fetch": "^0.0.8",
+    "@catalist-nestjs/key-validation": "^0.0.7",
+    "@catalist-nestjs/middleware": "^0.0.9",
+    "@catalist-nestjs/contracts": "^0.0.8",
     "@nestjs/common": "^8.0.0",
     "@nestjs/config": "^1.0.1",
     "@nestjs/core": "^8.0.0",
