@@ -6,7 +6,7 @@ export const CATALIST_LOCATOR_BY_NETWORK: {
   [CHAINS.Mainnet]: '0xC1d0b3DE6792Bf6b4b37EccdcC24e45978Cfd2Eb',
   [CHAINS.Goerli]: '0x1eDf09b5023DC86737b59dE68a8130De878984f5',
   [CHAINS.Holesky]: '0x28FAB2059C713A7F9D8c86Db49f9bb0e96Af1ef8',
-  [CHAINS.EnduranceMainnet]: '0xE39c3142efA4e8a37770731bC8397e3F3B87e7C7',
+  [CHAINS.EnduranceMainnet]: '0xc0fB23Eb1f39Aa386AAF37CC60A8767c77666224',
 };
 
 export const getCatalistLocatorAddress = (chainId: CHAINS): string => {
