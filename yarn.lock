@@ -448,7 +448,7 @@
   resolved "https://registry.yarnpkg.com/@chainsafe/as-sha256/-/as-sha256-0.3.1.tgz#3639df0e1435cab03f4d9870cc3ac079e57a6fc9"
   integrity sha512-hldFFYuf49ed7DAakWVXSJODuq3pzJEguD8tQ7h+sGkM18vja+OFoJI9krnGmgzyuZC2ETX0NOIcCTy31v2Mtg==
 
-"@chainsafe/blst@0.2.10", "@chainsafe/blst@^0.2.10":
+"@chainsafe/blst@0.2.10", "@chainsafe/blst@^0.2.8":
   version "0.2.10"
   resolved "https://registry.yarnpkg.com/@chainsafe/blst/-/blst-0.2.10.tgz#77802e5b1ff2d98ec1d25dcd5f7d27b89d376a40"
   integrity sha512-ofecTL5fWsNwnpS2oUh56dDXJRmCEcDKNNBFDb2ux+WtvdjrdSq6B+L/eNlg+sVBzXbzrCw1jq8Y8+cYiHg32w==

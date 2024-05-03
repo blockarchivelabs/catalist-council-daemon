@@ -9,8 +9,10 @@ services:
       - POSTGRES_DB=${KEYS_API_DB_NAME}
       - POSTGRES_USER=${KEYS_API_DB_USER}
       - POSTGRES_PASSWORD=${KEYS_API_DB_PASSWORD}
+    ports:
+      - 5432:5432
     volumes:
-      - ./.volumes/pgdata-${CHAIN_ID}/:/var/lib/postgresql/data
+      - ./.volumes/pgdata-${KEYS_API_CHAIN_ID}/:/var/lib/postgresql/data
     networks:
       - catalist_network
 
@@ -47,8 +49,8 @@ services:
       - CONSENSUS_CLIENT_URI=${KEYS_API_CL_API_URLS}
       - EXECUTION_CLIENT_URI=${RPC_URL}
       - KEYS_API_URI=http://keys_api_service_api:${KEYS_API_PORT}
-      - CATALIST_LOCATOR_ADDRESS={CATALIST_LOCATOR_ADDRESS}
-      - MEMBER_PRIV_KEY=${WALLET_PRIVATE_KEY}
+      - CATALIST_LOCATOR_ADDRESS=${CATALIST_LOCATOR_ADDRESS}
+      - MEMBER_PRIV_KEY=${ORACLE_MEMBER_PRIVATE_KEY}
       - ALLOW_REPORTING_IN_BUNKER_MODE=True
       - CMD_PARAMETER=accounting
       - PROMETHEUS_PORT=3002
@@ -67,7 +69,7 @@ services:
       - EXECUTION_CLIENT_URI=${RPC_URL}
       - KEYS_API_URI=http://keys_api_service_api:${KEYS_API_PORT}
       - CATALIST_LOCATOR_ADDRESS=${CATALIST_LOCATOR_ADDRESS}
-      - MEMBER_PRIV_KEY=${WALLET_PRIVATE_KEY}
+      - MEMBER_PRIV_KEY=${ORACLE_MEMBER_PRIVATE_KEY}
       - ALLOW_REPORTING_IN_BUNKER_MODE=True
       - CMD_PARAMETER=ejector
       - PROMETHEUS_PORT=3003
@@ -102,30 +104,30 @@ services:
     depends_on:
       - keys_api_service_db
 
-  council_daemon:
+    #  council_daemon:
     # get last hash from  https://docs.lido.fi/guides/tooling/#council-daemon
-    image: blockarchivelabs/catalist-council-daemon:latest
-    restart: always
-    ports:
-      - '${COUNCIL_PORT}:${COUNCIL_PORT}' # port is used for prometheus metrics
-    environment:
-      - PORT=${COUNCIL_PORT}
-      - LOG_LEVEL=${LOG_LEVEL}
-      - LOG_FORMAT=${LOG_FORMAT}
-      - RPC_URL=${RPC_URL}
-      - WALLET_PRIVATE_KEY=${WALLET_PRIVATE_KEY}
-      - KEYS_API_HOST=http://keys_api_service_api
-      - KEYS_API_PORT=${KEYS_API_PORT}
-      - PUBSUB_SERVICE=rabbitmq
-      - RABBITMQ_URL=ws://rabbitmq
-      - RABBITMQ_LOGIN=${RABBITMQ_LOGIN}
-      - RABBITMQ_PASSCODE=${RABBITMQ_PASSCODE}
-    depends_on:
-      - keys_api_service_api
-    volumes:
-      - ./.volumes/cache/:/council/cache/
-    networks:
-      - catalist_network
+    #image: blockarchivelabs/catalist-council-daemon:latest
+    #restart: always
+    #ports:
+    #  - '${COUNCIL_PORT}:${COUNCIL_PORT}' # port is used for prometheus metrics
+    #environment:
+    #  - PORT=${COUNCIL_PORT}
+    #  - LOG_LEVEL=${LOG_LEVEL}
+    #  - LOG_FORMAT=${LOG_FORMAT}
+    #  - RPC_URL=${RPC_URL}
+    #  - WALLET_PRIVATE_KEY=${WALLET_PRIVATE_KEY}
+    #  - KEYS_API_HOST=http://keys_api_service_api
+    #  - KEYS_API_PORT=${KEYS_API_PORT}
+    #  - PUBSUB_SERVICE=rabbitmq
+    #  - RABBITMQ_URL=ws://rabbitmq
+    #  - RABBITMQ_LOGIN=${RABBITMQ_LOGIN}
+    #  - RABBITMQ_PASSCODE=${RABBITMQ_PASSCODE}
+    #depends_on:
+    #  - keys_api_service_api
+    #volumes:
+    #  - ./.volumes/cache/:/council/cache/
+    #networks:
+    #  - catalist_network
 
 networks:
   catalist_network:

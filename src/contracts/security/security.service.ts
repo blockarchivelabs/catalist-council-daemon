@@ -76,6 +76,9 @@ export class SecurityService {
     const guardians = await this.getGuardians(blockTag);
     const address = this.walletService.address;
 
+    this.logger.log(`guardians : `, {
+      guardians: guardians,
+    });
     return guardians.indexOf(address);
   }
 

@@ -1,6 +1,6 @@
 {
   "name": "catalist-council-daemon",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Catalist Council Daemon",
   "author": "Catalist team",
   "private": true,
@@ -29,7 +29,7 @@
     "cache:clear": "rimraf cache"
   },
   "dependencies": {
-    "@chainsafe/blst": "^0.2.10",
+    "@chainsafe/blst": "^0.2.8",
     "@chainsafe/ssz": "^0.9.2",
     "@ethersproject/providers": "^5.4.5",
     "@catalist-nestjs/fetch": "^1.0.0",
