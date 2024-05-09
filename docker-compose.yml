@@ -104,6 +104,34 @@ services:
     depends_on:
       - keys_api_service_db
 
+  validator-ejector:
+    # get last hash from  https://docs.lido.fi/guides/tooling/#keys-api
+    image: blockarchivelabs/catalist-validator-ejector:latest
+    restart: always
+    container_name: validator_ejector
+    environment:
+      - EXECUTION_NODE=${RPC_URL}
+      - CONSENSUS_NODE=${KEYS_API_CL_API_URLS}
+      - LOCATOR_ADDRESS=${CATALIST_LOCATOR_ADDRESS}
+      - STAKING_MODULE_ID=${STAKING_MODULE_ID}
+      - OPERATOR_ID=${OPERATOR_ID}
+      - ETHDO_PATH=${ETHDO_PATH}
+      - KEYSTORE_PASSWARD=${KEYSTORE_PASSWARD}
+      - MESSAGES_LOCATION=${MESSAGES_LOCATION}
+      - MESSAGES_PASSWORD=${MESSAGES_PASSWORD}
+      - VALIDATOR_EXIT_WEBHOOK=
+      - ORACLE_ADDRESSES_ALLOWLIST=${ORACLE_ADDRESSES_ALLOWLIST}
+      - BLOCKS_PRELOAD=${BLOCKS_PRELOAD} # 7 days of blocks
+      - HTTP_PORT=8989
+      - RUN_METRICS=true
+      - RUN_HEALTH_CHECK=true
+      - LOGGER_LEVEL=info
+      - LOGGER_FORMAT=simple
+      - LOGGER_SECRETS=["MESSAGES_PASSWORD","EXECUTION_NODE", "CONSENSUS_NODE"]
+      - DRY_RUN=false
+    networks:
+      - catalist_network
+
     #  council_daemon:
     # get last hash from  https://docs.lido.fi/guides/tooling/#council-daemon
     #image: blockarchivelabs/catalist-council-daemon:latest
