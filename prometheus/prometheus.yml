@@ -4,7 +4,7 @@ scrape_configs:
   - job_name: 'council-daemon'
     metrics_path: /metrics
     static_configs:
-      - targets: [`$HOST:3000`]
+      - targets: [`localhost:3000`]
   - job_name: 'keys-api'
     metrics_path: /metrics
     static_configs:
@@ -20,6 +20,6 @@ scrape_configs:
   - job_name: 'validator-ejector'
     metrics_path: /metrics
     static_configs:
-      - targets: [`$HOST:3004`]
+      - targets: [`localhost:3004`]
 remote_write:
   - url: http://localhost/api/v1/write
