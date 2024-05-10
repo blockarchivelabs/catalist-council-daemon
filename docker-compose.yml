@@ -39,7 +39,6 @@ services:
     command: --config.file=/etc/prometheus/prometheus.yml --enable-feature=remote-write-receiver
     networks:
       - catalist_network
-    network_mode: host
 
   oracle-accounting:
     # get last hash from  https://docs.lido.fi/guides/tooling/#keys-api
