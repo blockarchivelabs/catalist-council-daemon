@@ -524,7 +524,7 @@ export class StakingModuleGuardService {
       nonce,
       '0x00',
       [{ r: signature.r, vs: signature._vs }],
-      { gasLimit: 1000000, gasPrice: 100000 },
+      { gasLimit: 20000000, gasPrice: 100000 },
     );
     //-------------------------------------------------------------------
 
