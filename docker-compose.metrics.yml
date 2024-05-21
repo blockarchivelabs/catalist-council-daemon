@@ -5,10 +5,10 @@ services:
     image: prom/prometheus:v2.44.0
     container_name: council_daemon_prometheus
     ports:
-      - 9090:9090
+      - 9091:9091
     volumes:
       - ./prometheus/:/etc/prometheus/
-    command: --config.file=/etc/prometheus/prometheus.yml --enable-feature=remote-write-receiver
+    command: --config.file=/etc/prometheus/docker-prometheus.yml --web.enable-remote-write-receiver --web.listen-address=0.0.0.0:9091
 
   council_daemon_grafana:
     image: grafana/grafana-oss:9.1.5
