@@ -25,19 +25,7 @@ services:
     volumes:
       - ./grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
     depends_on:
-      - pm2_daemon_prometheus
       - docker_prometheus
-    networks:
-      - catalist_network
-
-  pm2_daemon_prometheus:
-    image: prom/prometheus:v2.44.0
-    container_name: pm2_daemon_prometheus
-    ports:
-      - 9091:9091
-    volumes:
-      - ./prometheus/:/etc/prometheus/
-    command: --config.file=/etc/prometheus/pm2-prometheus.yml --enable-feature=remote-write-receiver
     networks:
       - catalist_network
 
