@@ -60,4 +60,22 @@ describe('SecurityService', () => {
       expect(mockProviderCall).toBeCalledTimes(1);
     });
   });
+
+  describe('getBufferedAce', () => {
+    it('should return buffered ace', async () => {
+      const expected = '645579135630000000000';
+      const mockProviderCall = jest
+        .spyOn(providerService.provider, 'call')
+        .mockImplementation(async () => {
+          const iface = new Interface(CatalistAbi__factory.abi);
+          const result = [expected];
+          return iface.encodeFunctionResult('getBufferedAce', result);
+        });
+
+      const wc = await catalistService.getBufferedAce();
+      console.log(+wc.toString() / 10 ** 18);
+      expect(wc.toString()).toBe(expected);
+      expect(mockProviderCall).toBeCalledTimes(1);
+    });
+  });
 });
