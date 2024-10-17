@@ -16,18 +16,21 @@ import { RepositoryService } from 'contracts/repository';
 import { WalletService } from 'wallet';
 import { ProviderService } from 'provider';
 import { StakingRouterAbi } from 'generated';
+import { CatalistService } from 'contracts/catalist';
+import { Configuration } from 'common/config';
 
 @Injectable()
 export class StakingModuleGuardService {
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private logger: LoggerService,
-    private repositoryService: RepositoryService,
     private securityService: SecurityService,
     private stakingRouterService: StakingRouterService,
     private guardianMetricsService: GuardianMetricsService,
     private guardianMessageService: GuardianMessageService,
     private keysValidationService: KeysValidationService,
+    private catalistService: CatalistService,
+    protected readonly config: Configuration,
   ) {}
 
   private lastContractsStateByModuleId: Record<number, ContractsState | null> =
@@ -492,6 +495,17 @@ export class StakingModuleGuardService {
     // need to check invalidKeysFound
     if (isSameContractsState) {
       this.logger.log("Contract states didn't change", { stakingModuleId });
+      return;
+    }
+
+    const bufferedAce = await this.catalistService.getBufferedAce();
+
+    if (+bufferedAce.toString() / 10 ** 18 < +this.config.MIN_BUFFERED_ACE) {
+      this.logger.log(
+        `Buffered ACE under ${this.config.MIN_BUFFERED_ACE}! ${
+          +bufferedAce.toString() / 10 ** 18
+        }`,
+      );
       return;
     }
 

@@ -8,6 +8,8 @@ import { GuardianMessageModule } from '../guardian-message';
 
 import { StakingModuleGuardService } from './staking-module-guard.service';
 import { KeysValidationModule } from 'guardian/keys-validation/keys-validation.module';
+import { CatalistModule } from 'contracts/catalist';
+import { ConfigModule } from 'common/config';
 
 @Module({
   imports: [
@@ -16,6 +18,8 @@ import { KeysValidationModule } from 'guardian/keys-validation/keys-validation.m
     GuardianMetricsModule,
     GuardianMessageModule,
     KeysValidationModule,
+    CatalistModule,
+    ConfigModule,
   ],
   providers: [StakingModuleGuardService],
   exports: [StakingModuleGuardService],

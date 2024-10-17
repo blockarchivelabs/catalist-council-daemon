@@ -23,7 +23,9 @@ export class KeysApiService {
       controller.abort();
     }, FETCH_REQUEST_TIMEOUT);
 
-    const baseUrl = `${this.config.KEYS_API_HOST}:${this.config.KEYS_API_PORT}`;
+    let baseUrl = `${this.config.KEYS_API_HOST}`;
+    if (this.config.KEYS_API_HOST === 'http://localhost')
+      baseUrl += `:${this.config.KEYS_API_PORT}`;
 
     try {
       const res: Response = await this.fetchService.fetchJson(
